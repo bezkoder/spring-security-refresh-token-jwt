@@ -1,6 +1,6 @@
 package com.bezkoder.spring.security.jwt.models;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "roles")

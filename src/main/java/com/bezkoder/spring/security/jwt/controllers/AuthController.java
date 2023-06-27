@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +38,7 @@ import com.bezkoder.spring.security.jwt.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.jwt.security.services.RefreshTokenService;
 import com.bezkoder.spring.security.jwt.security.services.UserDetailsImpl;
 
+//for Angular Client (withCredentials)
 //@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600, allowCredentials="true")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController

@@ -1,9 +1,10 @@
 package com.bezkoder.spring.security.jwt.security.jwt;
 
+import java.security.Key;
 import java.util.Date;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ import com.bezkoder.spring.security.jwt.models.User;
 import com.bezkoder.spring.security.jwt.security.services.UserDetailsImpl;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtils {
@@ -66,15 +69,18 @@ public class JwtUtils {
   }
 
   public String getUserNameFromJwtToken(String token) {
-    return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    return Jwts.parserBuilder().setSigningKey(key()).build()
+        .parseClaimsJws(token).getBody().getSubject();
   }
 
+  private Key key() {
+    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+  }
+  
   public boolean validateJwtToken(String authToken) {
     try {
-      Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+      Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
       return true;
-    } catch (SignatureException e) {
-      logger.error("Invalid JWT signature: {}", e.getMessage());
     } catch (MalformedJwtException e) {
       logger.error("Invalid JWT token: {}", e.getMessage());
     } catch (ExpiredJwtException e) {
@@ -93,7 +99,7 @@ public class JwtUtils {
         .setSubject(username)
         .setIssuedAt(new Date())
         .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-        .signWith(SignatureAlgorithm.HS512, jwtSecret)
+        .signWith(key(), SignatureAlgorithm.HS256)
         .compact();
   }
     
